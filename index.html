@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>种子文件转磁力链接工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 20px;
+        }
+
+        .drop-zone {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 60px 20px;
+            text-align: center;
+            background: #fafbfc;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .drop-zone.dragover {
+            border-color: #27ae60;
+            background: #f0f9f4;
+        }
+
+        .drop-zone input[type="file"] {
+            display: none;
+        }
+
+        .drop-zone i {
+            font-size: 4rem;
+            color: #95a5a6;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .drop-zone h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .drop-zone p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #c0392b;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .file-list-container {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .file-list-container h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .file-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .file-item {
+            padding: 8px 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .file-item:hover {
+            background: #e9ecef;
+        }
+
+        .file-item i {
+            margin-right: 8px;
+            color: #3498db;
+        }
+
+        .file-item .file-name {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .file-item .remove-btn {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .file-item .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .progress-container h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 10px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .results {
+            margin-bottom: 30px;
+        }
+
+        .result-item {
+            background: #fafbfc;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            background: #f0f8ff;
+            border-color: #3498db;
+        }
+
+        .result-item.success {
+            border-left: 4px solid #27ae60;
+        }
+
+        .result-item.error {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .result-item h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .result-item .magnet-link {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .result-item .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .copy-btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #7f8c8d;
+        }
+
+        .download-btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #2980b9;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #3498db;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .content {
+                padding: 30px 15px;
+            }
+
+            .drop-zone {
+                padding: 40px 15px;
+            }
+
+            .drop-zone h2 {
+                font-size: 1.2rem;
+            }
+
+            .drop-zone i {
+                font-size: 3rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                min-width: auto;
+                padding: 15px 20px;
+                font-size: 1rem;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            .file-list {
+                max-height: 150px;
+            }
+
+            .file-item {
+                padding: 10px;
+                margin-bottom: 8px;
+            }
+
+            .file-item .remove-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .file-status {
+                font-size: 0.8rem;
+                padding: 4px 8px;
+            }
+
+            .magnet-link {
+                font-size: 0.85rem;
+                padding: 12px;
+            }
+
+            .copy-btn, .download-btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .result-item {
+                padding: 15px;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid #27ae60;
+        }
+
+        .toast.error {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .toast.warning {
+            border-left: 4px solid #f39c12;
+        }
+
+        .toast i {
+            margin-right: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* 语言切换按钮 */
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #ddd;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover {
+            background: white;
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .lang-btn.active {
+            background: #3498db;
+            border-color: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="switchLanguage('zh')">中文</button>
+        <button class="lang-btn" onclick="switchLanguage('en')">English</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 data-lang-zh="种子文件转磁力链接工具" data-lang-en="Torrent to Magnet Link Converter">种子文件转磁力链接工具</h1>
+            <p data-lang-zh="直接在浏览器中快速将种子文件转换为磁力链接，支持拖放和批量处理" data-lang-en="Quickly convert torrent files to magnet links directly in your browser, supporting drag and drop and batch processing">直接在浏览器中快速将种子文件转换为磁力链接，支持拖放和批量处理</p>
+        </div>
+
+        <div class="content">
+            <div class="drop-zone" id="dropZone">
+                <input type="file" id="fileInput" multiple accept=".torrent">
+                <i>📄</i>
+                <h2 data-lang-zh="点击或拖放种子文件到这里" data-lang-en="Click or drag and drop torrent files here">点击或拖放种子文件到这里</h2>
+                <p data-lang-zh="支持 .torrent 文件，可同时上传多个文件" data-lang-en="Supports .torrent files, you can upload multiple files at once">支持 .torrent 文件，可同时上传多个文件</p>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="selectFiles()" data-lang-zh="选择文件" data-lang-en="Select Files">选择文件</button>
+                <button class="btn btn-primary" onclick="convertFiles()" data-lang-zh="开始转换" data-lang-en="Start Conversion">开始转换</button>
+                <button class="btn btn-primary" onclick="copyAllMagnetLinks()" id="copyAllBtn" disabled data-lang-zh="批量复制" data-lang-en="Copy All">批量复制</button>
+                <button class="btn btn-secondary" onclick="clearResults()" data-lang-zh="清空结果" data-lang-en="Clear Results">清空结果</button>
+            </div>
+
+            <div class="file-list-container" id="fileListContainer">
+                <h3 data-lang-zh="已选择的文件" data-lang-en="Selected Files">已选择的文件</h3>
+                <div class="file-list" id="fileList">
+                </div>
+            </div>
+
+            <div class="progress-container" id="progressContainer">
+                <h3 data-lang-zh="转换进度" data-lang-en="Conversion Progress">转换进度</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText" data-lang-zh="0% 已完成" data-lang-en="0% Complete">0% 已完成</p>
+            </div>
+
+            <div class="loading" id="loading">
+                <i>⏳</i>
+                <h3 data-lang-zh="正在解析种子文件..." data-lang-en="Parsing torrent files...">正在解析种子文件...</h3>
+            </div>
+
+            <div class="stats" id="stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalFiles">0</span>
+                    <span class="stat-label" data-lang-zh="总文件数" data-lang-en="Total Files">总文件数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="successCount">0</span>
+                    <span class="stat-label" data-lang-zh="成功转换" data-lang-en="Success">成功转换</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="errorCount">0</span>
+                    <span class="stat-label" data-lang-zh="转换失败" data-lang-en="Error">转换失败</span>
+                </div>
+            </div>
+
+            <div class="results" id="results">
+            </div>
+        </div>
+
+        <div class="footer">
+            <p data-lang-zh="网页版种子文件转磁力链接工具 | 基于 JavaScript 实现" data-lang-en="Web-based torrent file to magnet link converter | Built with JavaScript">网页版种子文件转磁力链接工具 | 基于 JavaScript 实现</p>
+            <p style="margin-top: 10px;">
+                <a href="https://www.bittorrent.org" target="_blank" data-lang-zh="BitTorrent 协议" data-lang-en="BitTorrent Protocol">BitTorrent 协议</a> |
+                <a href="#" onclick="showHelp()" data-lang-zh="使用帮助" data-lang-en="Help">使用帮助</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 语言字典
+        const translations = {
+            zh: {
+                "请输入磁力链接，支持多个链接，每行一个": "请输入磁力链接，支持多个链接，每行一个",
+                "下载种子文件": "下载种子文件",
+                "无法解析磁力链接": "无法解析磁力链接",
+                "功能开发中，当前无法直接从磁力链接生成种子文件": "功能开发中，当前无法直接从磁力链接生成种子文件",
+                "正在解析种子文件...": "正在解析种子文件...",
+                "点击开始转换按钮": "点击开始转换按钮",
+                "转换完成后查看结果": "转换完成后查看结果",
+                "可复制磁力链接或直接打开": "可复制磁力链接或直接打开",
+                "所有处理在浏览器本地完成，不会上传到服务器。": "所有处理在浏览器本地完成，不会上传到服务器。"
+            },
+            en: {
+                "请输入磁力链接，支持多个链接，每行一个": "Please enter magnet links, one per line",
+                "下载种子文件": "Download Torrent File",
+                "无法解析磁力链接": "Failed to parse magnet link",
+                "功能开发中，当前无法直接从磁力链接生成种子文件": "This function is under development and cannot directly generate torrent files from magnet links at this time",
+                "正在解析种子文件...": "Parsing torrent files...",
+                "点击开始转换按钮": "Click Start Conversion button",
+                "转换完成后查看结果": "View results after conversion",
+                "可复制磁力链接或直接打开": "You can copy magnet links or open directly",
+                "所有处理在浏览器本地完成，不会上传到服务器。": "All processing is done locally in the browser and will not be uploaded to the server."
+            }
+        };
+
+        let currentLanguage = 'zh';
+
+        function switchLanguage(lang) {
+            if (lang === currentLanguage) {
+                return;
+            }
+
+            currentLanguage = lang;
+
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="switchLanguage('${lang}')"]`).classList.add('active');
+
+            document.querySelectorAll('[data-lang-zh], [data-lang-en]').forEach(element => {
+                const tagName = element.tagName.toLowerCase();
+                if (tagName === 'input' || tagName === 'textarea') {
+                    const placeholderKey = element.getAttribute('placeholder');
+                    if (placeholderKey) {
+                        element.setAttribute('placeholder', translations[lang][placeholderKey] || placeholderKey);
+                    }
+                } else {
+                    const zhText = element.getAttribute('data-lang-zh');
+                    const enText = element.getAttribute('data-lang-en');
+                    if (element.hasChildNodes() && element.childNodes.length === 1 && element.childNodes[0].nodeType === Node.TEXT_NODE) {
+                        element.textContent = lang === 'zh' ? zhText : enText;
+                    }
+                }
+            });
+        }
+
+        // DOM 元素
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const loading = document.getElementById('loading');
+        const resultsContainer = document.getElementById('results');
+        const toast = document.getElementById('toast');
+        const totalFilesSpan = document.getElementById('totalFiles');
+        const successCountSpan = document.getElementById('successCount');
+        const errorCountSpan = document.getElementById('errorCount');
+
+        let files = [];
+        let results = [];
+
+        // 事件监听器
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFileDrop(e);
+        });
+
+        function selectFiles() {
+            fileInput.click();
+        }
+
+        function handleFileSelect(e) {
+            const selectedFiles = Array.from(e.target.files);
+            addFiles(selectedFiles);
+        }
+
+        function handleFileDrop(e) {
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            addFiles(droppedFiles);
+        }
+
+        function addFiles(newFiles) {
+            const torrentFiles = newFiles.filter(file => file.name.toLowerCase().endsWith('.torrent'));
+
+            if (torrentFiles.length === 0) {
+                showToast(currentLanguage === 'zh' ? '请选择有效的 .torrent 文件' : 'Please select valid .torrent files', 'warning');
+                return;
+            }
+
+            files = [...files, ...torrentFiles];
+            updateStats();
+            displayFileList();
+
+            showToast(currentLanguage === 'zh' ? `已添加 ${torrentFiles.length} 个种子文件` : `Added ${torrentFiles.length} torrent files`, 'success');
+        }
+
+        function displayFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = files.map((file, index) => {
+                const result = results.find(r => r.file.name === file.name);
+                const status = result ? (result.success ? 'success' : 'error') : 'pending';
+
+                return `
+                    <div class="file-item" data-index="${index}">
+                        <i class="${status}-icon">${
+                            status === 'success' ? '✅' :
+                            status === 'error' ? '❌' :
+                            '📄'
+                        }</i>
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-status ${status}">${
+                            status === 'success' ? (currentLanguage === 'zh' ? '已成功' : 'Success') :
+                            status === 'error' ? (currentLanguage === 'zh' ? '失败' : 'Error') :
+                            (currentLanguage === 'zh' ? '待转换' : 'Pending')
+                        }</span>
+                        <button class="remove-btn" onclick="removeFile(${index})" data-lang-zh="删除" data-lang-en="Remove">删除</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function removeFile(index) {
+            files.splice(index, 1);
+            updateStats();
+            displayFileList();
+            showToast(currentLanguage === 'zh' ? '文件已删除' : 'File removed', 'success');
+        }
+
+        async function convertFiles() {
+            if (files.length === 0) {
+                showToast(currentLanguage === 'zh' ? '请先选择种子文件' : 'Please select torrent files first', 'warning');
+                return;
+            }
+
+            results = [];
+            resultsContainer.innerHTML = '';
+            progressContainer.style.display = 'block';
+            loading.style.display = 'block';
+
+            let processed = 0;
+            const total = files.length;
+
+            for (let file of files) {
+                try {
+                    const magnetLink = await parseTorrentFile(file);
+                    results.push({
+                        file: file,
+                        magnet: magnetLink,
+                        success: true
+                    });
+                } catch (error) {
+                    results.push({
+                        file: file,
+                        error: error.message,
+                        success: false
+                    });
+                }
+
+                processed++;
+                updateProgress(processed, total);
+                updateStats();
+                displayFileList();
+                displayResults();
+            }
+
+            loading.style.display = 'none';
+            progressContainer.style.display = 'none';
+            showToast(currentLanguage === 'zh' ? '转换完成！' : 'Conversion completed!', 'success');
+        }
+
+        async function parseTorrentFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    try {
+                        const arrayBuffer = e.target.result;
+                        const buffer = new Uint8Array(arrayBuffer);
+
+                        const data = bdecode(buffer);
+
+                        if (!data || !data.info) {
+                            throw new Error('不是有效的种子文件');
+                        }
+
+                        const infoHash = sha1(bencode(data.info));
+                        let magnetLink = `magnet:?xt=urn:btih:${bytesToHex(infoHash)}`;
+
+                        if (data.info.name) {
+                            const name = typeof data.info.name === 'string'
+                                ? data.info.name
+                                : new TextDecoder('utf-8').decode(data.info.name);
+                            magnetLink += `&dn=${encodeURIComponent(name)}`;
+                        }
+
+                        if (data.info.length) {
+                            magnetLink += `&xl=${data.info.length}`;
+                        }
+
+                        if (data['announce-list']) {
+                            const trackers = [];
+                            for (let tier of data['announce-list']) {
+                                for (let tracker of tier) {
+                                    const trackerStr = typeof tracker === 'string'
+                                        ? tracker
+                                        : new TextDecoder('utf-8').decode(tracker);
+                                    trackers.push(trackerStr);
+                                }
+                            }
+                            magnetLink += `&tr=${trackers.map(encodeURIComponent).join('&tr=')}`;
+                        } else if (data.announce) {
+                            const announce = typeof data.announce === 'string'
+                                ? data.announce
+                                : new TextDecoder('utf-8').decode(data.announce);
+                            magnetLink += `&tr=${encodeURIComponent(announce)}`;
+                        }
+
+                        resolve(magnetLink);
+                    } catch (error) {
+                        reject(new Error(error.message || '解析种子文件失败'));
+                    }
+                };
+
+                reader.onerror = function() {
+                    reject(new Error('读取文件失败'));
+                };
+
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function updateProgress(processed, total) {
+            const percentage = Math.round((processed / total) * 100);
+            progressFill.style.width = `${percentage}%`;
+            progressText.textContent = `${percentage}% ${currentLanguage === 'zh' ? '已完成' : 'Completed'}`;
+        }
+
+        function updateStats() {
+            const totalFiles = files.length;
+            const successCount = results.filter(r => r.success).length;
+            const errorCount = results.filter(r => !r.success).length;
+
+            document.getElementById('totalFiles').textContent = totalFiles;
+            document.getElementById('successCount').textContent = successCount;
+            document.getElementById('errorCount').textContent = errorCount;
+            updateCopyAllButtonState();
+        }
+
+        function displayResults() {
+            resultsContainer.innerHTML = results.map(result => `
+                <div class="result-item ${result.success ? 'success' : 'error'}">
+                    <h3>${result.file.name}</h3>
+                    ${result.success ? `
+                        <div class="magnet-link">${result.magnet}</div>
+                        <div class="actions">
+                            <button class="copy-btn" onclick="copyMagnetLink('${result.magnet}')" data-lang-zh="复制链接" data-lang-en="Copy">${currentLanguage === 'zh' ? '复制链接' : 'Copy'}</button>
+                            <button class="download-btn" onclick="window.open('${result.magnet}')" data-lang-zh="打开链接" data-lang-en="Open">${currentLanguage === 'zh' ? '打开链接' : 'Open'}</button>
+                        </div>
+                    ` : `
+                        <div class="error-message">
+                            <i>❌ ${currentLanguage === 'zh' ? '错误: ' : 'Error: '}${result.error}</i>
+                        </div>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        function copyMagnetLink(magnetLink) {
+            navigator.clipboard.writeText(magnetLink).then(() => {
+                showToast(currentLanguage === 'zh' ? '磁力链接已复制到剪贴板' : 'Magnet link copied to clipboard', 'success');
+            }).catch(err => {
+                showToast(currentLanguage === 'zh' ? '复制失败，请手动复制' : 'Copy failed, please copy manually', 'error');
+            });
+        }
+
+        function copyAllMagnetLinks() {
+            if (results.length === 0) {
+                showToast(currentLanguage === 'zh' ? '没有可复制的磁力链接' : 'No magnet links to copy', 'warning');
+                return;
+            }
+
+            const successResults = results.filter(result => result.success);
+            if (successResults.length === 0) {
+                showToast(currentLanguage === 'zh' ? '没有成功转换的磁力链接' : 'No successful magnet links to copy', 'warning');
+                return;
+            }
+
+            const allMagnetLinks = successResults.map(result => result.magnet).join('\n');
+
+            navigator.clipboard.writeText(allMagnetLinks).then(() => {
+                showToast(`${currentLanguage === 'zh' ? '已成功复制' : 'Successfully copied'} ${successResults.length} ${currentLanguage === 'zh' ? '个磁力链接到剪贴板' : 'magnet links to clipboard'}`, 'success');
+            }).catch(err => {
+                showToast(currentLanguage === 'zh' ? '复制失败，请手动复制' : 'Copy failed, please copy manually', 'error');
+            });
+        }
+
+        function updateCopyAllButtonState() {
+            const copyAllBtn = document.getElementById('copyAllBtn');
+            const hasSuccessResults = results.some(result => result.success);
+            copyAllBtn.disabled = !hasSuccessResults;
+        }
+
+        function clearResults() {
+            files = [];
+            results = [];
+            resultsContainer.innerHTML = '';
+            updateStats();
+            progressContainer.style.display = 'none';
+            loading.style.display = 'none';
+            progressFill.style.width = '0%';
+            document.getElementById('copyAllBtn').disabled = true;
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast';
+            toast.classList.add(type);
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showHelp() {
+            const helpText = currentLanguage === 'zh' ? `
+使用帮助：
+
+1. 点击或拖放种子文件到页面
+2. 支持同时处理多个种子文件
+3. 点击开始转换按钮
+4. 转换完成后查看结果
+5. 可复制磁力链接或直接打开
+
+所有处理在浏览器本地完成，不会上传到服务器。
+            ` : `
+Help:
+
+1. Click or drag and drop torrent files to the page
+2. Supports processing multiple torrent files at the same time
+3. Click Start Conversion button
+4. View results after conversion
+5. You can copy magnet links or open directly
+
+All processing is done locally in the browser and will not be uploaded to the server.
+            `;
+
+            showToast(helpText, 'warning');
+        }
+
+        // Bencode 解析和编码
+        function bdecode(data) {
+            let index = 0;
+
+            function decode() {
+                if (index >= data.length) {
+                    return null;
+                }
+
+                if (data[index] >= 0x30 && data[index] <= 0x39) {
+                    const colonIndex = findByte(data, 0x3a, index);
+                    if (colonIndex === -1) {
+                        throw new Error('无效的字符串格式');
+                    }
+                    const length = parseInt(decodeASCII(data.slice(index, colonIndex)));
+                    index = colonIndex + 1;
+                    if (index + length > data.length) {
+                        throw new Error('字符串长度超出边界');
+                    }
+                    const result = data.slice(index, index + length);
+                    index += length;
+                    return result;
+                }
+
+                switch (data[index]) {
+                    case 0x64:
+                        index++;
+                        const dict = {};
+                        while (index < data.length && data[index] !== 0x65) {
+                            const key = decode();
+                            const keyStr = typeof key === 'string' ? key : decodeASCII(key);
+                            const value = decode();
+                            dict[keyStr] = value;
+                        }
+                        if (index < data.length && data[index] === 0x65) {
+                            index++;
+                        }
+                        return dict;
+
+                    case 0x6c:
+                        index++;
+                        const list = [];
+                        while (index < data.length && data[index] !== 0x65) {
+                            list.push(decode());
+                        }
+                        if (index < data.length && data[index] === 0x65) {
+                            index++;
+                        }
+                        return list;
+
+                    case 0x69:
+                        index++;
+                        const eIndex = findByte(data, 0x65, index);
+                        if (eIndex === -1) {
+                            throw new Error('无效的整数格式');
+                        }
+                        const numStr = decodeASCII(data.slice(index, eIndex));
+                        const num = parseInt(numStr);
+                        index = eIndex + 1;
+                        return num;
+
+                    case 0x65:
+                        index++;
+                        return null;
+
+                    default:
+                        throw new Error(`未知类型前缀: 0x${data[index].toString(16)}`);
+                }
+            }
+
+            return decode();
+        }
+
+        function bencode(data) {
+            if (typeof data === 'number') {
+                return `i${data}e`;
+            } else if (typeof data === 'string') {
+                return `${data.length}:${data}`;
+            } else if (data instanceof Uint8Array) {
+                return `${data.length}:${new TextDecoder('utf-8').decode(data)}`;
+            } else if (Array.isArray(data)) {
+                let result = 'l';
+                for (let item of data) {
+                    result += bencode(item);
+                }
+                result += 'e';
+                return result;
+            } else if (typeof data === 'object') {
+                let result = 'd';
+                const keys = Object.keys(data).sort();
+                for (let key of keys) {
+                    result += bencode(key);
+                    result += bencode(data[key]);
+                }
+                result += 'e';
+                return result;
+            }
+            return '';
+        }
+
+        function findByte(data, target, start) {
+            for (let i = start; i < data.length; i++) {
+                if (data[i] === target) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function decodeASCII(data) {
+            const decoder = new TextDecoder('utf-8');
+            return decoder.decode(data);
+        }
+
+        function sha1(data) {
+            const buffer = new TextEncoder('utf-8').encode(data);
+
+            return new Promise((resolve, reject) => {
+                crypto.subtle.digest('SHA-1', buffer)
+                    .then(hash => {
+                        resolve(new Uint8Array(hash));
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function bytesToHex(data) {
+            return Array.from(data).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+    </script>
+</body>
+</html>
