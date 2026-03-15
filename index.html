@@ -365,6 +365,73 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* 暗黑模式样式 */
+        .dark-mode body {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .dark-mode .container {
+            background: #2d2d2d;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode .header {
+            background: #1e1e1e;
+            color: #fff;
+            border-bottom: 1px solid #444;
+        }
+
+        .dark-mode .content {
+            background: #2d2d2d;
+        }
+
+        .dark-mode .drop-zone {
+            background: #3d3d3d;
+            border-color: #555;
+        }
+
+        .dark-mode .drop-zone:hover {
+            background: #4d4d4d;
+            border-color: #666;
+        }
+
+        .dark-mode .file-list-container {
+            background: #3d3d3d;
+            border-color: #555;
+        }
+
+        .dark-mode .file-list {
+            background: #4d4d4d;
+            border-color: #555;
+        }
+
+        .dark-mode .file-item {
+            background: #5d5d5d;
+        }
+
+        .dark-mode .file-item:hover {
+            background: #6d6d6d;
+        }
+
+        .dark-mode .result-item {
+            background: #3d3d3d;
+            border-color: #555;
+        }
+
+        .dark-mode .magnet-link {
+            background: #4d4d4d;
+            border-color: #555;
+            color: #fff;
+        }
+
+        .dark-mode .toast {
+            background: #3d3d3d;
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 响应式设计 */
         @media (max-width: 768px) {
             .container {
                 margin: 0;
@@ -496,35 +563,186 @@
             text-decoration: underline;
         }
 
-        /* 语言切换按钮 */
-        .lang-switcher {
+        /* 设置按钮 */
+        .settings-container {
             position: absolute;
             top: 20px;
             right: 20px;
+        }
+
+        .settings-btn {
+            padding: 8px 12px;
+            font-size: 1rem;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 设置面板 */
+        .settings-panel {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .settings-panel.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 设置面板样式 */
+        .settings-section {
+            margin-bottom: 20px;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 主题色切换 */
+        .theme-colors {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .color-btn.active {
+            border-color: #333;
+        }
+
+        /* 模式切换 */
+        .mode-switch {
+            display: flex;
+            align-items: center;
             gap: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+        }
+
+        input:checked + .slider {
+            background-color: #2c3e50;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2c3e50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* 语言切换 */
+        .language-switch {
+            display: flex;
+            gap: 8px;
         }
 
         .lang-btn {
             padding: 5px 10px;
             font-size: 0.8rem;
             font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            border: 1px solid #ddd;
+            background: white;
+            color: #333;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .lang-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: #f5f5f5;
+            border-color: #3498db;
+            color: #3498db;
         }
 
         .lang-btn.active {
-            background: rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.6);
+            background: #3498db;
+            border-color: #3498db;
             color: white;
         }
 
@@ -556,9 +774,40 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="lang-switcher">
-                <button class="lang-btn active" onclick="switchLanguage('zh')">中文</button>
-                <button class="lang-btn" onclick="switchLanguage('en')">English</button>
+            <div class="settings-container">
+                <button class="settings-btn" id="settingsBtn" onclick="toggleSettings()">
+                    <i>⚙️</i>
+                </button>
+                <div class="settings-panel" id="settingsPanel">
+                    <div class="settings-section">
+                        <h3 data-lang-zh="主题色" data-lang-en="Theme Color">主题色</h3>
+                        <div class="theme-colors">
+                            <button class="color-btn active" data-color="#2c3e50" style="background: #2c3e50"></button>
+                            <button class="color-btn" data-color="#34495e" style="background: #34495e"></button>
+                            <button class="color-btn" data-color="#1abc9c" style="background: #1abc9c"></button>
+                            <button class="color-btn" data-color="#3498db" style="background: #3498db"></button>
+                            <button class="color-btn" data-color="#9b59b6" style="background: #9b59b6"></button>
+                            <button class="color-btn" data-color="#f39c12" style="background: #f39c12"></button>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3 data-lang-zh="模式" data-lang-en="Mode">模式</h3>
+                        <div class="mode-switch">
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeSwitch" onchange="toggleDarkMode()">
+                                <span class="slider round"></span>
+                            </label>
+                            <span data-lang-zh="暗黑模式" data-lang-en="Dark Mode">暗黑模式</span>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3 data-lang-zh="语言" data-lang-en="Language">语言</h3>
+                        <div class="language-switch">
+                            <button class="lang-btn active" onclick="switchLanguage('zh')">中文</button>
+                            <button class="lang-btn" onclick="switchLanguage('en')">English</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <h1 data-lang-zh="种子文件转磁力链接工具" data-lang-en="Torrent to Magnet Link Converter">种子文件转磁力链接工具</h1>
             <p data-lang-zh="直接在浏览器中快速将种子文件转换为磁力链接，支持拖放和批量处理" data-lang-en="Quickly convert torrent files to magnet links directly in your browser, supporting drag and drop and batch processing">直接在浏览器中快速将种子文件转换为磁力链接，支持拖放和批量处理</p>
@@ -657,6 +906,30 @@
 
         let currentLanguage = 'zh';
 
+        // 设置面板功能
+        function toggleSettings() {
+            const settingsPanel = document.getElementById('settingsPanel');
+            settingsPanel.classList.toggle('show');
+        }
+
+        // 主题色切换
+        function changeThemeColor(color) {
+            document.querySelector('.header').style.background = color;
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // 明暗模式切换
+        function toggleDarkMode() {
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+            if (darkModeSwitch.checked) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        // 语言切换
         function switchLanguage(lang) {
             if (lang === currentLanguage) {
                 return;
@@ -683,6 +956,23 @@
                 }
             });
         }
+
+        // 点击设置面板外部关闭
+        document.addEventListener('click', function(event) {
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsPanel = document.getElementById('settingsPanel');
+            if (!settingsBtn.contains(event.target) && !settingsPanel.contains(event.target)) {
+                settingsPanel.classList.remove('show');
+            }
+        });
+
+        // 主题色按钮点击事件
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const color = this.getAttribute('data-color');
+                changeThemeColor(color);
+            });
+        });
 
         // DOM 元素
         const dropZone = document.getElementById('dropZone');
