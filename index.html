@@ -1129,36 +1129,7 @@
 
                         const bencodedInfo = await bencode(data.info);
                         const infoHash = await sha1(bencodedInfo);
-                        let magnetLink = `magnet:?xt=urn:btih:${bytesToHex(infoHash)}`;
-
-                        if (data.info.name) {
-                            const name = typeof data.info.name === 'string'
-                                ? data.info.name
-                                : new TextDecoder('utf-8').decode(data.info.name);
-                            magnetLink += `&dn=${encodeURIComponent(name)}`;
-                        }
-
-                        if (data.info.length) {
-                            magnetLink += `&xl=${data.info.length}`;
-                        }
-
-                        if (data['announce-list']) {
-                            const trackers = [];
-                            for (let tier of data['announce-list']) {
-                                for (let tracker of tier) {
-                                    const trackerStr = typeof tracker === 'string'
-                                        ? tracker
-                                        : new TextDecoder('utf-8').decode(tracker);
-                                    trackers.push(trackerStr);
-                                }
-                            }
-                            magnetLink += `&tr=${trackers.map(encodeURIComponent).join('&tr=')}`;
-                        } else if (data.announce) {
-                            const announce = typeof data.announce === 'string'
-                                ? data.announce
-                                : new TextDecoder('utf-8').decode(data.announce);
-                            magnetLink += `&tr=${encodeURIComponent(announce)}`;
-                        }
+                        const magnetLink = `magnet:?xt=urn:btih:${bytesToHex(infoHash)}`;
 
                         resolve(magnetLink);
                     } catch (error) {

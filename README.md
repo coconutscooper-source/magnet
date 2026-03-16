@@ -31,18 +31,48 @@ python3 -m http.server 8000
 
 ### 部署到 Vercel
 
-1. 安装 Vercel CLI：
+#### 方法一：使用 Vercel CLI（推荐）
+
+1. 确保你已经安装了 Vercel CLI：
 
 ```bash
-npm i -g vercel
+# 检查是否已安装
+vercel --version
+
+# 如果未安装，使用 npm 安装（需要管理员权限）
+sudo npm i -g vercel
 ```
 
-2. 部署项目：
+2. 登录 Vercel（如果尚未登录）：
+
+```bash
+vercel login
+```
+
+3. 部署项目：
 
 ```bash
 cd vercel-deploy
-vercel
+# 部署到生产环境
+vercel --prod
 ```
+
+4. 部署完成后，你会收到一个类似 `https://your-project.vercel.app` 的 URL
+
+#### 方法二：在线部署
+
+1. 在 GitHub 上创建新仓库
+2. 将项目代码推送到这个仓库
+3. 登录 Vercel 网站（https://vercel.com）
+4. 导入你的 GitHub 仓库
+5. 按照提示完成部署
+
+#### 注意事项
+
+- 项目已包含 `vercel.json` 配置文件，用于正确处理路由
+- 支持两个页面的访问：
+  - 主页：`https://your-project.vercel.app`
+  - 工具页面：`https://your-project.vercel.app/reference-site.html`
 
 ## 技术说明
 

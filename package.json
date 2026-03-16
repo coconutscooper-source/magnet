@@ -1,0 +1,21 @@
+{
+  "name": "torrent-to-magnet-tool",
+  "version": "1.0.0",
+  "description": "A simple tool to convert torrent files to magnet links",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "deploy": "vercel",
+    "build": "echo 'Static site build completed'"
+  },
+  "keywords": [
+    "torrent",
+    "magnet",
+    "converter",
+    "tool"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}
