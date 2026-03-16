@@ -1127,7 +1127,8 @@
                             throw new Error('不是有效的种子文件');
                         }
 
-                        const infoHash = await sha1(bencode(data.info));
+                        const bencodedInfo = await bencode(data.info);
+                        const infoHash = await sha1(bencodedInfo);
                         let magnetLink = `magnet:?xt=urn:btih:${bytesToHex(infoHash)}`;
 
                         if (data.info.name) {
@@ -1367,30 +1368,60 @@ All processing is done locally in the browser and will not be uploaded to the se
         }
 
         function bencode(data) {
-            if (typeof data === 'number') {
-                return `i${data}e`;
-            } else if (typeof data === 'string') {
-                return `${data.length}:${data}`;
-            } else if (data instanceof Uint8Array) {
-                return `${data.length}:${new TextDecoder('utf-8').decode(data)}`;
-            } else if (Array.isArray(data)) {
-                let result = 'l';
-                for (let item of data) {
-                    result += bencode(item);
+            return new Promise(async (resolve) => {
+                const encoder = new TextEncoder('utf-8');
+                if (typeof data === 'number') {
+                    const buffer = encoder.encode(`i${data}e`);
+                    resolve(new Uint8Array(buffer));
+                } else if (typeof data === 'string') {
+                    const strBuffer = encoder.encode(data);
+                    const lengthBuffer = encoder.encode(`${strBuffer.length}:`);
+                    const buffer = new Uint8Array(lengthBuffer.length + strBuffer.length);
+                    buffer.set(lengthBuffer);
+                    buffer.set(strBuffer, lengthBuffer.length);
+                    resolve(buffer);
+                } else if (data instanceof Uint8Array) {
+                    const lengthBuffer = encoder.encode(`${data.length}:`);
+                    const buffer = new Uint8Array(lengthBuffer.length + data.length);
+                    buffer.set(lengthBuffer);
+                    buffer.set(data, lengthBuffer.length);
+                    resolve(buffer);
+                } else if (Array.isArray(data)) {
+                    let buffers = [encoder.encode('l')];
+                    for (let item of data) {
+                        buffers.push(await bencode(item));
+                    }
+                    buffers.push(encoder.encode('e'));
+                    const totalLength = buffers.reduce((sum, buf) => sum + buf.length, 0);
+                    const buffer = new Uint8Array(totalLength);
+                    let offset = 0;
+                    for (let buf of buffers) {
+                        buffer.set(buf, offset);
+                        offset += buf.length;
+                    }
+                    resolve(buffer);
+                } else if (typeof data === 'object' && !(data instanceof Uint8Array)) {
+                    let buffers = [encoder.encode('d')];
+                    const keys = Object.keys(data).sort();
+                    for (let key of keys) {
+                        const keyBuffer = await bencode(key);
+                        buffers.push(keyBuffer);
+                        const valueBuffer = await bencode(data[key]);
+                        buffers.push(valueBuffer);
+                    }
+                    buffers.push(encoder.encode('e'));
+                    const totalLength = buffers.reduce((sum, buf) => sum + buf.length, 0);
+                    const buffer = new Uint8Array(totalLength);
+                    let offset = 0;
+                    for (let buf of buffers) {
+                        buffer.set(buf, offset);
+                        offset += buf.length;
+                    }
+                    resolve(buffer);
+                } else {
+                    resolve(new Uint8Array());
                 }
-                result += 'e';
-                return result;
-            } else if (typeof data === 'object') {
-                let result = 'd';
-                const keys = Object.keys(data).sort();
-                for (let key of keys) {
-                    result += bencode(key);
-                    result += bencode(data[key]);
-                }
-                result += 'e';
-                return result;
-            }
-            return '';
+            });
         }
 
         function findByte(data, target, start) {
@@ -1408,7 +1439,10 @@ All processing is done locally in the browser and will not be uploaded to the se
         }
 
         function sha1(data) {
-            const buffer = new TextEncoder('utf-8').encode(data);
+            // 如果是字符串，转换为 Uint8Array
+            const buffer = typeof data === 'string'
+                ? new TextEncoder('utf-8').encode(data)
+                : data;
 
             return new Promise((resolve, reject) => {
                 crypto.subtle.digest('SHA-1', buffer)
